@@ -525,6 +525,9 @@ public class RecordAccumulator {
                                                 Math.max(1.0f, (float) bigBatch.compressionRatio()));
         Deque<ProducerBatch> dq = bigBatch.split(this.batchSize);
         int numSplitBatches = dq.size();
+        if (numSplitBatches == 1) {
+            throw new IllegalStateException("Cannot re-enqueue the batch because splitting yielded a single item.");
+        }
         Deque<ProducerBatch> partitionDequeue = getOrCreateDeque(bigBatch.topicPartition);
         while (!dq.isEmpty()) {
             ProducerBatch batch = dq.pollLast();
